@@ -17,11 +17,6 @@ namespace Thinject
             get { return false; }
         }
 
-        public override RegistrationValidationResult Validate()
-        {
-            return new RegistrationValidationResult();
-        }
-
         protected override object ActivateInstance(IActivator activator)
         {
             return Factory.Invoke(activator);

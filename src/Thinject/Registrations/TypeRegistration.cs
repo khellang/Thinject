@@ -55,7 +55,10 @@ namespace Thinject
             }
         }
 
-        public abstract RegistrationValidationResult Validate();
+        public virtual RegistrationValidationResult Validate()
+        {
+            return new RegistrationValidationResult();
+        }
 
         protected abstract object ActivateInstance(IActivator activator);
     }

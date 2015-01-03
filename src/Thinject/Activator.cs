@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,42 +7,48 @@ namespace Thinject
 {
     internal class Activator : IActivator
     {
-        private readonly ConcurrentDictionary<Type, ConstructorInfo> _constructorCache;
+        private readonly object _padlock = new object();
+
+        private readonly IDictionary<Type, ConstructorInfo> _constructorCache;
 
         private readonly IContainer _container;
 
         public Activator(IContainer container)
         {
             _container = container;
-            _constructorCache = new ConcurrentDictionary<Type, ConstructorInfo>();
+            _constructorCache = new Dictionary<Type, ConstructorInfo>();
         }
 
         public object ActivateInstance(Type type)
         {
-            ConstructorInfo cachedConstructor;
-            if (_constructorCache.TryGetValue(type, out cachedConstructor))
+            lock (_padlock)
             {
-                object[] arguments;
-                if (TryResolveParameters(cachedConstructor.GetParameters(), out arguments))
-                {
-                    return cachedConstructor.Invoke(arguments.ToArray());
-                }
-            }
-            else
-            {
-                var constructors = GetConstructorDictionary(type).OrderByDescending(x => x.Value.Count);
-
-                foreach (var constructor in constructors)
+                ConstructorInfo cachedConstructor;
+                if (_constructorCache.TryGetValue(type, out cachedConstructor))
                 {
                     object[] arguments;
-                    if (TryResolveParameters(constructor.Value, out arguments))
+                    if (TryResolveParameters(cachedConstructor.GetParameters(), out arguments))
                     {
-                        var instance = constructor.Key.Invoke(arguments.ToArray());
-
-                        _constructorCache.TryAdd(type, constructor.Key);
-
-                        return instance;
+                        return cachedConstructor.Invoke(arguments.ToArray());
                     }
+                }
+            }
+
+            var constructors = GetConstructorDictionary(type).OrderByDescending(x => x.Value.Count);
+
+            foreach (var constructor in constructors)
+            {
+                object[] arguments;
+                if (TryResolveParameters(constructor.Value, out arguments))
+                {
+                    var instance = constructor.Key.Invoke(arguments.ToArray());
+
+                    lock (_padlock)
+                    {
+                        _constructorCache.Add(type, constructor.Key);
+                    }
+
+                    return instance;
                 }
             }
 
