@@ -161,6 +161,17 @@ namespace Thinject.Tests
 
                 Assert.Same(a, b);
             }
+
+            [Fact]
+            public void ShouldResolveInstanceFromFactory()
+            {
+                _container.Register<IFoo>(c => new Foo());
+                _container.Register<IBar>(c => new Bar(c.Resolve<IFoo>()));
+
+                var instance = _container.Resolve<IBar>();
+
+                Assert.NotNull(instance.Foo);
+            }
         }
 
         public class ResolveAll
@@ -249,17 +260,22 @@ namespace Thinject.Tests
 
     public interface IBar
     {
+        IFoo Foo { get; }
     }
 
     public class Bar : IBar
     {
         public Bar(IFoo foo)
         {
+            Foo = foo;
         }
+
+        public IFoo Foo { get; private set; }
     }
 
     public class FooBar : IFoo, IBar
     {
+        public IFoo Foo { get; private set; }
     }
 
     public interface IDefaultConstructor : IFoo
