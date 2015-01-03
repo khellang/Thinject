@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/khellang/Thinject/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/khellang/Thinject</projectUrl>
+    <description>$description$</description>
+    <copyright>Copyright © Kristian Hellang 2015</copyright>
+    <tags>IoC Container DI Dependency Injection</tags>
+  </metadata>
+</package>
