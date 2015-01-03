@@ -130,6 +130,19 @@ namespace Thinject.Tests
 
                 Assert.Equal(2, instance.Foos.Count);
             }
+
+            [Fact]
+            public void ShouldResolveFromParent()
+            {
+                _container.RegisterType<IFoo, Foo>(Lifetime.Singleton);
+
+                var child = _container.CreateChildContainer();
+
+                var a = _container.Resolve<IFoo>();
+                var b = child.Resolve<IFoo>();
+
+                Assert.Same(a, b);
+            }
         }
 
         public class ResolveAll
@@ -173,6 +186,31 @@ namespace Thinject.Tests
                 _container.Dispose();
 
                 Assert.False(instance.IsDisposed);
+            }
+
+            [Fact]
+            public void ShouldDisposeChildContainers()
+            {
+                var child = _container.CreateChildContainer();
+
+                child.RegisterType<Foo>(Lifetime.Singleton);
+
+                var instance = child.Resolve<Foo>();
+
+                _container.Dispose();
+
+                Assert.True(instance.IsDisposed);
+            }
+        }
+
+        public class CreateChildContainer
+        {
+            [Fact]
+            public void ShouldCreateChildContainer()
+            {
+                var container = new Container();
+
+                container.CreateChildContainer();
             }
         }
     }

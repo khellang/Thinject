@@ -6,7 +6,7 @@ A super simple, easy to use, portable, decent-performing IoC container - just fo
  - [x] Lifetimes
 	 - [x] Singleton
 	 - [x] Transient
- - [ ] Child Containers
+ - [x] Child Containers
  - [ ] Registrations Types
 	 - [x] Type
 	 - [x] Instance

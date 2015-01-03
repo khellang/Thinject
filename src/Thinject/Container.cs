@@ -6,7 +6,22 @@ namespace Thinject
 {
     public sealed class Container : IContainer
     {
-        private readonly MultiValueDictionary<Type, IRegistration> _registrations = new MultiValueDictionary<Type, IRegistration>();
+        private readonly MultiValueDictionary<Type, IRegistration> _registrations;
+
+        private readonly IList<IContainer> _children;
+
+        private readonly Container _parent;
+
+        public Container()
+        {
+            _registrations = new MultiValueDictionary<Type, IRegistration>();
+            _children = new List<IContainer>();
+        }
+
+        private Container(Container parent) : this()
+        {
+            _parent = parent;
+        }
 
         public void RegisterInstance(Type serviceType, object instance)
         {
@@ -28,6 +43,15 @@ namespace Thinject
             return ResolveInternal(serviceType).ToList();
         }
 
+        public IContainer CreateChildContainer()
+        {
+            var child = new Container(this);
+
+            _children.Add(child);
+
+            return child;
+        }
+
         private void AddRegistration(IRegistration registration)
         {
             var result = registration.Validate();
@@ -45,7 +69,17 @@ namespace Thinject
             IReadOnlyCollection<IRegistration> registrations;
             if (!_registrations.TryGetValue(serviceType, out registrations))
             {
-                throw new MissingRegistrationException(serviceType);
+                if (_parent == null)
+                {
+                    throw new MissingRegistrationException(serviceType);
+                }
+
+                foreach (var instance in _parent.ResolveInternal(serviceType))
+                {
+                    yield return instance;
+                }
+
+                yield break;
             }
 
             var activator = new Activator(this);
@@ -58,6 +92,11 @@ namespace Thinject
 
         public void Dispose()
         {
+            foreach (var child in _children)
+            {
+                child.Dispose();
+            }
+
             foreach (var service in _registrations)
             {
                 foreach (var registration in service.Value)

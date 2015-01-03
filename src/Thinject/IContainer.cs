@@ -12,5 +12,7 @@ namespace Thinject
         object Resolve(Type serviceType);
 
         IEnumerable<object> ResolveAll(Type serviceType);
+
+        IContainer CreateChildContainer();
     }
 }
