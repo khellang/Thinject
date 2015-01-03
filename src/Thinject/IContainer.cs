@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 
 namespace Thinject
 {
-    public interface IContainer : IDisposable
+    public interface IContainer : IResolver, IDisposable
     {
         void RegisterInstance(Type serviceType, object instance);
 
         void RegisterType(Type serviceType, Type concreteType, Lifetime lifetime);
 
-        object Resolve(Type serviceType);
-
-        IEnumerable<object> ResolveAll(Type serviceType);
+        void Register<T>(Func<IResolver, T> factory, Lifetime lifetime);
 
         IContainer CreateChildContainer();
     }

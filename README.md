@@ -9,8 +9,9 @@ A super simple, easy to use, portable, decent-performing IoC container - just fo
  - [x] Child Containers
  - [ ] Registrations Types
 	 - [x] Type
+	 - [ ] Open Generic Type
 	 - [x] Instance
-	 - [ ] Lambda (Factory)
+	 - [x] Lambda (Factory)
 	 - [ ] Named
  - [ ] Constructor Parameters
 	 - [x] `IEnumerable<T>`

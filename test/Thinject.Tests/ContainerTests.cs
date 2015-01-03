@@ -12,7 +12,7 @@ namespace Thinject.Tests
             private readonly IContainer _container = new Container();
 
             [Fact]
-            public void ShouldNotThrowWhenRegisteringInstance()
+            public void ShouldRegisterInstanceSuccessfully()
             {
                 _container.RegisterInstance<IFoo>(new Foo());
             }
@@ -23,16 +23,34 @@ namespace Thinject.Tests
             private readonly IContainer _container = new Container();
 
             [Fact]
-            public void ShouldNotThrowWhenRegisteringSingleType()
+            public void ShouldRegisterSingleTypeSuccessfully()
             {
                 _container.RegisterType<IFoo, Foo>();
             }
 
             [Fact]
-            public void ShouldNotThrowWhenRegisteringMultipleType()
+            public void ShouldRegisterMultipleTypesSuccessfully()
             {
                 _container.RegisterType<IFoo, Foo>();
                 _container.RegisterType<IFoo, FooBar>();
+            }
+        }
+
+        public class Register
+        {
+            private readonly IContainer _container = new Container();
+
+            [Fact]
+            public void ShouldRegisterSingleTypeSuccessfully()
+            {
+                _container.Register(c => new Foo());
+            }
+
+            [Fact]
+            public void ShouldRegisterMultipleTypesSuccessfully()
+            {
+                _container.Register<IFoo>(c => new Foo());
+                _container.Register<IBar>(c => new Bar(c.Resolve<IFoo>()));
             }
         }
 

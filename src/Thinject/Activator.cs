@@ -50,6 +50,16 @@ namespace Thinject
             throw new NoSuitableConstructorException(type);
         }
 
+        public object Resolve(Type serviceType)
+        {
+            return _container.Resolve(serviceType);
+        }
+
+        public IEnumerable<object> ResolveAll(Type serviceType)
+        {
+            return _container.ResolveAll(serviceType);
+        }
+
         private bool TryResolveParameters(IEnumerable<ParameterInfo> parameters, out object[] arguments)
         {
             var args = new List<object>();
@@ -64,10 +74,11 @@ namespace Thinject
                     if (parameterType.TryGetGenericCollectionArgument(out argumentType))
                     {
                         args.Add(_container.ResolveAll(argumentType).Cast(argumentType));
-                        continue;
                     }
-
-                    args.Add(_container.Resolve(parameterType));
+                    else
+                    {
+                        args.Add(_container.Resolve(parameterType));
+                    }
                 }
                 catch (Exception)
                 {

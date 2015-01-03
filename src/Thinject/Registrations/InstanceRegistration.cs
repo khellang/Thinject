@@ -2,40 +2,30 @@
 
 namespace Thinject
 {
-    internal class InstanceRegistration : IRegistration
+    internal class InstanceRegistration : TypeRegistration
     {
-        private readonly object _instance;
-
-        private readonly Type _serviceType;
-
-        public InstanceRegistration(Type serviceType, object instance)
+        public InstanceRegistration(Type serviceType, object instance) : base(serviceType, Lifetime.Singleton)
         {
-            _serviceType = serviceType;
-            _instance = instance;
+            Instance = instance;
         }
 
-        public Type ServiceType
-        {
-            get { return _serviceType; }
-        }
-
-        public object ResolveInstance(IActivator activator)
-        {
-            return _instance;
-        }
-
-        public RegistrationValidationResult Validate()
+        public override RegistrationValidationResult Validate()
         {
             var result = new RegistrationValidationResult();
 
-            var instanceType = _instance.GetType();
+            var instanceType = Instance.GetType();
 
-            if (!_serviceType.IsAssignableFrom(instanceType))
+            if (!ServiceType.IsAssignableFrom(instanceType))
             {
-                result.AddError("Instance of type '{0}' must be assignable to type '{1}'.", instanceType.FullName, _serviceType.FullName);
+                result.AddError("Instance of type '{0}' must be assignable to type '{1}'.", instanceType.FullName, ServiceType.FullName);
             }
 
             return result;
+        }
+
+        protected override object ActivateInstance(IActivator activator)
+        {
+            return Instance;
         }
     }
 }

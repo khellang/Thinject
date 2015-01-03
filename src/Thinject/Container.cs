@@ -30,7 +30,12 @@ namespace Thinject
 
         public void RegisterType(Type serviceType, Type concreteType, Lifetime lifetime)
         {
-            AddRegistration(new TypeRegistration(serviceType, concreteType, lifetime));
+            AddRegistration(new ConcreteTypeRegistration(serviceType, concreteType, lifetime));
+        }
+
+        public void Register<T>(Func<IResolver, T> factory, Lifetime lifetime)
+        {
+            AddRegistration(new FactoryRegistration<T>(typeof(T), factory, lifetime));
         }
 
         public object Resolve(Type serviceType)

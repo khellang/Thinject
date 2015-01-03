@@ -2,75 +2,54 @@
 
 namespace Thinject
 {
-    internal class TypeRegistration : IRegistration, IDisposable
+    internal abstract class TypeRegistration : IRegistration, IDisposable
     {
         private readonly object _padlock = new object();
 
-        private readonly Type _serviceType;
-
-        private readonly Type _concreteType;
-
-        private readonly Lifetime _lifetime;
-
-        private object _instance;
-
-        public TypeRegistration(Type serviceType, Type concreteType, Lifetime lifetime)
+        protected TypeRegistration(Type serviceType, Lifetime lifetime)
         {
-            _serviceType = serviceType;
-            _concreteType = concreteType;
-            _lifetime = lifetime;
+            ServiceType = serviceType;
+            Lifetime = lifetime;
         }
 
-        public Type ServiceType
-        {
-            get { return _serviceType; }
-        }
+        public Type ServiceType { get; private set; }
+
+        public Lifetime Lifetime { get; private set; }
+
+        public object Instance { get; protected set; }
 
         public object ResolveInstance(IActivator activator)
         {
-            if (_lifetime == Lifetime.Transient)
+            if (Lifetime == Lifetime.Transient)
             {
-                return activator.ActivateInstance(_concreteType);
+                return ActivateInstance(activator);
             }
 
-            if (_instance == null)
+            if (Instance == null)
             {
                 lock (_padlock)
                 {
-                    if (_instance == null)
+                    if (Instance == null)
                     {
-                        _instance = activator.ActivateInstance(_concreteType);
+                        Instance = ActivateInstance(activator);
                     }
                 }
             }
 
-            return _instance;
-        }
-
-        public RegistrationValidationResult Validate()
-        {
-            var result = new RegistrationValidationResult();
-
-            if (!_serviceType.IsAssignableFrom(_concreteType))
-            {
-                result.AddError("Concrete type '{0}' must be assignable to type '{1}'.", _concreteType.FullName, _serviceType.FullName);
-            }
-
-            if (!_concreteType.CanBeConstructed())
-            {
-                result.AddError("Concrete type '{0}' must not be an interface or abstract class.", _concreteType.FullName);
-            }
-
-            return result;
+            return Instance;
         }
 
         public void Dispose()
         {
-            var disposable = _instance as IDisposable;
+            var disposable = Instance as IDisposable;
             if (disposable != null)
             {
                 disposable.Dispose();
             }
         }
+
+        public abstract RegistrationValidationResult Validate();
+
+        protected abstract object ActivateInstance(IActivator activator);
     }
 }
