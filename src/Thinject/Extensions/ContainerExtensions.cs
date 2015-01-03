@@ -63,11 +63,6 @@ namespace Thinject
             return (TService) container.Resolve(typeof(TService));
         }
 
-        public static object Resolve(this IContainer container, Type serviceType)
-        {
-            return container.ResolveAll(serviceType).First();
-        }
-
         public static IEnumerable<TService> ResolveAll<TService>(this IContainer container) where TService : class
         {
             return container.ResolveAll(typeof(TService)).Cast<TService>();

@@ -9,6 +9,8 @@ namespace Thinject
 
         void RegisterType(Type serviceType, Type concreteType, Lifetime lifetime);
 
+        object Resolve(Type serviceType);
+
         IEnumerable<object> ResolveAll(Type serviceType);
     }
 }

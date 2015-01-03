@@ -18,6 +18,11 @@ namespace Thinject
             AddRegistration(new TypeRegistration(serviceType, concreteType, lifetime));
         }
 
+        public object Resolve(Type serviceType)
+        {
+            return ResolveInternal(serviceType).First();
+        }
+
         public IEnumerable<object> ResolveAll(Type serviceType)
         {
             return ResolveInternal(serviceType).ToList();

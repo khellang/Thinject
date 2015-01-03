@@ -6,6 +6,6 @@
 [assembly: AssemblyProduct("Thinject")]
 [assembly: AssemblyCopyright("Copyright © Kristian Hellang 2015")]
 
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
-[assembly: AssemblyInformationalVersion("0.1.0-alpha")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyInformationalVersion("1.0.0-alpha")]
