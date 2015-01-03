@@ -72,7 +72,16 @@ namespace Thinject
         private IEnumerable<object> ResolveInternal(Type serviceType)
         {
             IReadOnlyCollection<IRegistration> registrations;
-            if (!_registrations.TryGetValue(serviceType, out registrations))
+            if (_registrations.TryGetValue(serviceType, out registrations))
+            {
+                var activator = new Activator(this);
+
+                foreach (var registration in registrations)
+                {
+                    yield return registration.ResolveInstance(activator);
+                }
+            }
+            else
             {
                 if (_parent == null)
                 {
@@ -83,15 +92,6 @@ namespace Thinject
                 {
                     yield return instance;
                 }
-
-                yield break;
-            }
-
-            var activator = new Activator(this);
-
-            foreach (var registration in registrations)
-            {
-                yield return registration.ResolveInstance(activator);
             }
         }
 
