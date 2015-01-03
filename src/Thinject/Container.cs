@@ -9,13 +9,6 @@ namespace Thinject
     {
         private readonly MultiValueDictionary<Type, IRegistration> _registrations = new MultiValueDictionary<Type, IRegistration>();
 
-        private readonly IActivator _activator;
-
-        public Container()
-        {
-            _activator = new SystemActivatorAdapter(this);
-        }
-
         public void RegisterInstance(Type serviceType, object instance)
         {
             _registrations.Add(serviceType, new InstanceRegistration(instance));
@@ -34,9 +27,11 @@ namespace Thinject
                 throw new MissingRegistrationException(serviceType);
             }
 
+            var activator = new Activator(this);
+
             foreach (var registration in registrations)
             {
-                yield return registration.ResolveInstance(_activator);
+                yield return registration.ResolveInstance(activator);
             }
         }
 
@@ -55,11 +50,11 @@ namespace Thinject
             }
         }
 
-        private class SystemActivatorAdapter : IActivator
+        private class Activator : IActivator
         {
             private readonly IContainer _container;
 
-            public SystemActivatorAdapter(IContainer container)
+            public Activator(IContainer container)
             {
                 _container = container;
             }
