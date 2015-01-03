@@ -103,6 +103,9 @@ _NCrunch_*
 *.mm.*
 AutoTest.Net/
 
+# GhostDoc
+*.GhostDoc.xml
+
 # Web workbench (sass)
 .sass-cache/
 
