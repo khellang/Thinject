@@ -6,11 +6,13 @@ A super simple, easy to use, portable, decent-performing IoC container - just fo
  - [x] Lifetimes
 	 - [x] Singleton
 	 - [x] Transient
- - [ ] Registrations
+ - [ ] Child Containers
+ - [ ] Registrations Types
 	 - [x] Type
 	 - [x] Instance
-	 - [ ] Lambda
+	 - [ ] Lambda (Factory)
+	 - [ ] Named
  - [ ] Constructor Parameters
 	 - [x] `IEnumerable<T>`
 	 - [ ] `Func<T>`
- - [ ] Child Containers
+ - [x] Automatic Disposal
