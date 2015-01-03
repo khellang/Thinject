@@ -10,17 +10,29 @@ namespace Thinject
 
         public void RegisterInstance(Type serviceType, object instance)
         {
-            _registrations.Add(serviceType, new InstanceRegistration(instance));
+            AddRegistration(new InstanceRegistration(serviceType, instance));
         }
 
         public void RegisterType(Type serviceType, Type concreteType, Lifetime lifetime)
         {
-            _registrations.Add(serviceType, new TypeRegistration(concreteType, lifetime));
+            AddRegistration(new TypeRegistration(serviceType, concreteType, lifetime));
         }
 
         public IEnumerable<object> ResolveAll(Type serviceType)
         {
             return ResolveInternal(serviceType).ToList();
+        }
+
+        private void AddRegistration(IRegistration registration)
+        {
+            var result = registration.Validate();
+
+            if (!result.IsValid)
+            {
+                throw new InvalidRegistrationException(result.Errors);
+            }
+
+            _registrations.Add(registration.ServiceType, registration);
         }
 
         private IEnumerable<object> ResolveInternal(Type serviceType)

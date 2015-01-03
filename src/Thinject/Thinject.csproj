@@ -36,16 +36,19 @@
   <ItemGroup>
     <Compile Include="Activator.cs" />
     <Compile Include="Container.cs" />
-    <Compile Include="ContainerExtensions.cs" />
+    <Compile Include="Extensions\ContainerExtensions.cs" />
     <Compile Include="IActivator.cs" />
     <Compile Include="IContainer.cs" />
-    <Compile Include="ReflectionExtensions.cs" />
+    <Compile Include="Exceptions\InvalidRegistrationException.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Exceptions\RegistrationException.cs" />
     <Compile Include="Registrations\InstanceRegistration.cs" />
     <Compile Include="Registrations\IRegistration.cs" />
     <Compile Include="Registrations\Lifetime.cs" />
     <Compile Include="Exceptions\MissingRegistrationException.cs" />
     <Compile Include="Exceptions\NoSuitableConstructorException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Registrations\RegistrationValidationResult.cs" />
     <Compile Include="Registrations\TypeRegistration.cs" />
     <Compile Include="Exceptions\ResolutionException.cs" />
   </ItemGroup>

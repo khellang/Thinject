@@ -34,5 +34,17 @@ namespace Thinject
             // TODO: Cache generic methods?
             return CastMethod.MakeGenericMethod(targetType).Invoke(null, new object[] { values });
         }
+
+        public static bool IsAssignableFrom(this Type type, Type otherType)
+        {
+            return type.GetTypeInfo().IsAssignableFrom(otherType.GetTypeInfo());
+        }
+
+        public static bool CanBeConstructed(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+
+            return typeInfo.IsClass && !typeInfo.IsAbstract;
+        }
     }
 }
