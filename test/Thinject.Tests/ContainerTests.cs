@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -117,6 +118,18 @@ namespace Thinject.Tests
 
                 Assert.IsType<Foo>(instance);
             }
+
+            [Fact]
+            public void ShouldResolveEnumerableConstructorParameters()
+            {
+                _container.RegisterType<IFoo, Foo>();
+                _container.RegisterType<IFoo, FooBar>();
+                _container.RegisterType<EnumerableConstructor>();
+
+                var instance = _container.Resolve<EnumerableConstructor>();
+
+                Assert.Equal(2, instance.Foos.Count);
+            }
         }
 
         public class ResolveAll
@@ -196,6 +209,16 @@ namespace Thinject.Tests
     public interface IDefaultConstructor : IFoo
     {
         bool WasCalled { get; }
+    }
+
+    public class EnumerableConstructor
+    {
+        public EnumerableConstructor(IEnumerable<IFoo> foos)
+        {
+            Foos = foos.ToList();
+        }
+
+        public IList<IFoo> Foos { get; private set; }
     }
 
     public class DefaultConstructor : IDefaultConstructor

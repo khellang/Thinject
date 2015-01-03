@@ -88,7 +88,16 @@ namespace Thinject
                 {
                     try
                     {
-                        args.Add(_container.Resolve(parameter.ParameterType));
+                        var parameterType = parameter.ParameterType;
+
+                        Type argumentType;
+                        if (parameterType.TryGetGenericCollectionArgument(out argumentType))
+                        {
+                            args.Add(_container.ResolveAll(argumentType).Cast(argumentType));
+                            continue;
+                        }
+
+                        args.Add(_container.Resolve(parameterType));
                     }
                     catch (Exception)
                     {
@@ -105,7 +114,7 @@ namespace Thinject
             {
                 var constructors = new MultiValueDictionary<ConstructorInfo, ParameterInfo>();
 
-                foreach (var constructor in type.GetTypeInfo().DeclaredConstructors)
+                foreach (var constructor in type.GetDeclaredConstructors())
                 {
                     constructors.AddRange(constructor, constructor.GetParameters());
                 }

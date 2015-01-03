@@ -38,6 +38,7 @@
     <Compile Include="ContainerExtensions.cs" />
     <Compile Include="IActivator.cs" />
     <Compile Include="IContainer.cs" />
+    <Compile Include="ReflectionExtensions.cs" />
     <Compile Include="Registrations\InstanceRegistration.cs" />
     <Compile Include="Registrations\IRegistration.cs" />
     <Compile Include="Registrations\Lifetime.cs" />
