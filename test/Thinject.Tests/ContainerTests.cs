@@ -1,11 +1,22 @@
 ﻿using System;
-using System.Collections;
+using System.Linq;
 using Xunit;
 
 namespace Thinject.Tests
 {
     public class ContainerTests
     {
+        public class RegisterInstance
+        {
+            private readonly IContainer _container = new Container();
+
+            [Fact]
+            public void ShouldNotThrowWhenRegisteringInstance()
+            {
+                _container.RegisterInstance<IFoo>(new Foo());
+            }
+        }
+
         public class RegisterType
         {
             private readonly IContainer _container = new Container();
@@ -21,17 +32,6 @@ namespace Thinject.Tests
             {
                 _container.RegisterType<IFoo, Foo>();
                 _container.RegisterType<IFoo, FooBar>();
-            }
-        }
-
-        public class RegisterInstance
-        {
-            private readonly IContainer _container = new Container();
-
-            [Fact]
-            public void ShouldNotThrowWhenRegisteringInstance()
-            {
-                _container.RegisterInstance<IFoo>(new Foo());
             }
         }
 
@@ -107,6 +107,31 @@ namespace Thinject.Tests
 
                 Assert.Throws<NoSuitableConstructorException>(() => _container.Resolve<IBar>());
             }
+
+            [Fact]
+            public void ShouldReturnFirstInstanceOfFirstRegistrationIfMultiple()
+            {
+                _container.RegisterTypes<IFoo>(new[] { typeof(Foo), typeof(FooBar) });
+
+                var instance = _container.Resolve<IFoo>();
+
+                Assert.IsType<Foo>(instance);
+            }
+        }
+
+        public class ResolveAll
+        {
+            private readonly IContainer _container = new Container();
+
+            [Fact]
+            public void ShouldResolveAllRegistrations()
+            {
+                _container.RegisterTypes<IFoo>(new[] { typeof(Foo), typeof(FooBar) });
+
+                var instances = _container.ResolveAll<IFoo>().ToList();
+
+                Assert.Equal(2, instances.Count);
+            }
         }
 
         public class Dispose
@@ -168,7 +193,7 @@ namespace Thinject.Tests
     {
     }
 
-    public interface IDefaultConstructor
+    public interface IDefaultConstructor : IFoo
     {
         bool WasCalled { get; }
     }

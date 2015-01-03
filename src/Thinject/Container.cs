@@ -21,6 +21,11 @@ namespace Thinject
 
         public IEnumerable<object> ResolveAll(Type serviceType)
         {
+            return ResolveInternal(serviceType).ToList();
+        }
+
+        private IEnumerable<object> ResolveInternal(Type serviceType)
+        {
             IReadOnlyCollection<IRegistration> registrations;
             if (!_registrations.TryGetValue(serviceType, out registrations))
             {

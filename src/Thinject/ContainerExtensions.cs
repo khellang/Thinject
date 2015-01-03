@@ -11,6 +11,19 @@ namespace Thinject
             container.RegisterInstance(typeof(T), instance);
         }
 
+        public static void RegisterTypes<T>(this IContainer container, IEnumerable<Type> types)
+        {
+            container.RegisterTypes<T>(types, Lifetime.Transient);
+        }
+
+        public static void RegisterTypes<T>(this IContainer container, IEnumerable<Type> types, Lifetime lifetime)
+        {
+            foreach (var type in types)
+            {
+                container.RegisterType(typeof(T), type, lifetime);
+            }
+        }
+
         public static void RegisterType<T>(this IContainer container)
         {
             container.RegisterType<T>(Lifetime.Transient);
