@@ -80,6 +80,31 @@ namespace Thinject.Tests
 
                 Assert.Same(a, b);
             }
+
+            [Fact]
+            public void ShouldResolveInstanceWithConstructorParameters()
+            {
+                _container.RegisterType<IFoo, Foo>();
+                _container.RegisterType<IBar, Bar>();
+
+                var instance = _container.Resolve<IBar>();
+
+                Assert.NotNull(instance);
+            }
+
+            [Fact]
+            public void ShouldThrowIfMissingRegistration()
+            {
+                Assert.Throws<MissingRegistrationException>(() => _container.Resolve<IBar>());
+            }
+
+            [Fact]
+            public void ShouldThrowIfNoSuitableConstructors()
+            {
+                _container.RegisterType<IBar, Bar>();
+
+                Assert.Throws<NoSuitableConstructorException>(() => _container.Resolve<IBar>());
+            }
         }
     }
 
@@ -91,7 +116,18 @@ namespace Thinject.Tests
     {
     }
 
-    public class FooBar : IFoo
+    public interface IBar
+    {
+    }
+
+    public class Bar : IBar
+    {
+        public Bar(IFoo foo)
+        {
+        }
+    }
+
+    public class FooBar : IFoo, IBar
     {
     }
 

@@ -42,6 +42,7 @@
     <Compile Include="IRegistration.cs" />
     <Compile Include="Lifetime.cs" />
     <Compile Include="MissingRegistrationException.cs" />
+    <Compile Include="NoSuitableConstructorException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeRegistration.cs" />
     <Compile Include="ResolutionException.cs" />
