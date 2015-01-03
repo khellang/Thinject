@@ -2,7 +2,7 @@
 
 namespace Thinject
 {
-    internal class TypeRegistration : IRegistration
+    internal class TypeRegistration : IRegistration, IDisposable
     {
         private readonly object _padlock = new object();
 
@@ -37,6 +37,15 @@ namespace Thinject
             }
 
             return activator.ActivateInstance(_concreteType);
+        }
+
+        public void Dispose()
+        {
+            var disposable = _instance as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

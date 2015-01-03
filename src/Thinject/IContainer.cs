@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Thinject
 {
-    public interface IContainer
+    public interface IContainer : IDisposable
     {
         void RegisterInstance(Type serviceType, object instance);
 

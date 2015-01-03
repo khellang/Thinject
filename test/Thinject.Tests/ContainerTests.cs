@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using System;
+using System.Collections;
+using Xunit;
 
 namespace Thinject.Tests
 {
@@ -106,14 +108,49 @@ namespace Thinject.Tests
                 Assert.Throws<NoSuitableConstructorException>(() => _container.Resolve<IBar>());
             }
         }
+
+        public class Dispose
+        {
+            private readonly IContainer _container = new Container();
+
+            [Fact]
+            public void ShouldDisposeContainerActivatedSingletons()
+            {
+                _container.RegisterType<Foo>(Lifetime.Singleton);
+
+                var instance = _container.Resolve<Foo>();
+
+                _container.Dispose();
+
+                Assert.True(instance.IsDisposed);
+            }
+
+            [Fact]
+            public void ShouldNotDisposeExternallyActivatedSingletons()
+            {
+                var instance = new Foo();
+
+                _container.RegisterInstance(instance);
+
+                _container.Dispose();
+
+                Assert.False(instance.IsDisposed);
+            }
+        }
     }
 
     public interface IFoo
     {
     }
 
-    public class Foo : IFoo
+    public class Foo : IFoo, IDisposable
     {
+        public void Dispose()
+        {
+            IsDisposed = true;
+        }
+
+        public bool IsDisposed { get; private set; }
     }
 
     public interface IBar

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Thinject
 {
-    public class Container : IContainer
+    public sealed class Container : IContainer
     {
         private readonly MultiValueDictionary<Type, IRegistration> _registrations = new MultiValueDictionary<Type, IRegistration>();
 
@@ -37,6 +37,21 @@ namespace Thinject
             foreach (var registration in registrations)
             {
                 yield return registration.ResolveInstance(_activator);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var service in _registrations)
+            {
+                foreach (var registration in service.Value)
+                {
+                    var disposable = registration as IDisposable;
+                    if (disposable != null)
+                    {
+                        disposable.Dispose();
+                    }
+                }
             }
         }
 
