@@ -4,21 +4,32 @@ namespace Thinject.Tests
 {
     public class ContainerTests
     {
-        public class Register
+        public class RegisterType
         {
             private readonly IContainer _container = new Container();
 
             [Fact]
             public void ShouldNotThrowWhenRegisteringSingleType()
             {
-                _container.Register<IFoo, Foo>();
+                _container.RegisterType<IFoo, Foo>();
             }
 
             [Fact]
             public void ShouldNotThrowWhenRegisteringMultipleType()
             {
-                _container.Register<IFoo, Foo>();
-                _container.Register<IFoo, FooBar>();
+                _container.RegisterType<IFoo, Foo>();
+                _container.RegisterType<IFoo, FooBar>();
+            }
+        }
+
+        public class RegisterInstance
+        {
+            private readonly IContainer _container = new Container();
+
+            [Fact]
+            public void ShouldNotThrowWhenRegisteringInstance()
+            {
+                _container.RegisterInstance<IFoo>(new Foo());
             }
         }
 
@@ -29,7 +40,7 @@ namespace Thinject.Tests
             [Fact]
             public void ShouldReturnInstanceWithDefaultConstructor()
             {
-                _container.Register<IDefaultConstructor, DefaultConstructor>();
+                _container.RegisterType<IDefaultConstructor, DefaultConstructor>();
 
                 var instance = _container.Resolve<IDefaultConstructor>();
 
@@ -39,7 +50,7 @@ namespace Thinject.Tests
             [Fact]
             public void ShouldResolveTransientInstances()
             {
-                _container.Register<IFoo, Foo>(Lifetime.Transient);
+                _container.RegisterType<IFoo, Foo>(Lifetime.Transient);
 
                 var a = _container.Resolve<IFoo>();
                 var b = _container.Resolve<IFoo>();
@@ -50,9 +61,21 @@ namespace Thinject.Tests
             [Fact]
             public void ShouldResolveSingletonInstances()
             {
-                _container.Register<IFoo, Foo>(Lifetime.Singleton);
+                _container.RegisterType<IFoo, Foo>(Lifetime.Singleton);
 
                 var a = _container.Resolve<IFoo>();
+                var b = _container.Resolve<IFoo>();
+
+                Assert.Same(a, b);
+            }
+
+            [Fact]
+            public void ShouldResolveRegisteredSingletonInstance()
+            {
+                var a = new Foo();
+
+                _container.RegisterInstance<IFoo>(a);
+
                 var b = _container.Resolve<IFoo>();
 
                 Assert.Same(a, b);
