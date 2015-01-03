@@ -18,6 +18,8 @@ namespace Thinject
 
         public object Instance { get; protected set; }
 
+        protected abstract bool IsExternallyOwned { get; }
+
         public object ResolveInstance(IActivator activator)
         {
             if (Lifetime == Lifetime.Transient)
@@ -41,6 +43,11 @@ namespace Thinject
 
         public void Dispose()
         {
+            if (IsExternallyOwned)
+            {
+                return;
+            }
+
             var disposable = Instance as IDisposable;
             if (disposable != null)
             {

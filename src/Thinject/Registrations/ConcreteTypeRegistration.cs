@@ -11,6 +11,11 @@ namespace Thinject
 
         public Type ConcreteType { get; private set; }
 
+        protected override bool IsExternallyOwned
+        {
+            get { return false; }
+        }
+
         public override RegistrationValidationResult Validate()
         {
             var result = new RegistrationValidationResult();

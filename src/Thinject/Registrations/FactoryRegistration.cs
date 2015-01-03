@@ -12,6 +12,11 @@ namespace Thinject
 
         public Func<IResolver, T> Factory { get; private set; }
 
+        protected override bool IsExternallyOwned
+        {
+            get { return false; }
+        }
+
         public override RegistrationValidationResult Validate()
         {
             return new RegistrationValidationResult();

@@ -9,6 +9,11 @@ namespace Thinject
             Instance = instance;
         }
 
+        protected override bool IsExternallyOwned
+        {
+            get { return true; }
+        }
+
         public override RegistrationValidationResult Validate()
         {
             var result = new RegistrationValidationResult();
