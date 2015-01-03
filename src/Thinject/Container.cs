@@ -66,8 +66,7 @@ namespace Thinject
 
             public object ActivateInstance(Type type)
             {
-                var constructors = GetConstructorDictionary(type)
-                    .OrderByDescending(x => x.Value.Count);
+                var constructors = GetConstructorDictionary(type).OrderByDescending(x => x.Value.Count);
 
                 foreach (var constructor in constructors)
                 {
