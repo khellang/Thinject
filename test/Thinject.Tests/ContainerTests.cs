@@ -150,6 +150,17 @@ namespace Thinject.Tests
             }
 
             [Fact]
+            public void ShouldResolveFuncConstructorParameters()
+            {
+                _container.RegisterType<IFoo, Foo>();
+                _container.RegisterType<FuncConstructor>();
+
+                var instance = _container.Resolve<FuncConstructor>();
+
+                Assert.NotNull(instance.Foo);
+            }
+
+            [Fact]
             public void ShouldResolveFromParent()
             {
                 _container.RegisterType<IFoo, Foo>(Lifetime.Singleton);
@@ -281,6 +292,18 @@ namespace Thinject.Tests
     public interface IDefaultConstructor : IFoo
     {
         bool WasCalled { get; }
+    }
+
+    public class FuncConstructor : IBar
+    {
+        private readonly Func<IFoo> _foo;
+
+        public FuncConstructor(Func<IFoo> foo)
+        {
+            _foo = foo;
+        }
+
+        public IFoo Foo { get { return _foo.Invoke(); } }
     }
 
     public class EnumerableConstructor

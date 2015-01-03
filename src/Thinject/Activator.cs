@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Thinject
 {
     internal class Activator : IActivator
     {
+        private static readonly MethodInfo ResolveMethod = typeof(IResolver).GetRuntimeMethod("Resolve", new[] { typeof(Type) });
+
         private readonly object _padlock = new object();
 
         private readonly IDictionary<Type, ConstructorInfo> _constructorCache;
@@ -21,16 +24,13 @@ namespace Thinject
 
         public object ActivateInstance(Type type)
         {
-            lock (_padlock)
+            ConstructorInfo cachedConstructor;
+            if (TryGetCachedConstructor(type, out cachedConstructor))
             {
-                ConstructorInfo cachedConstructor;
-                if (_constructorCache.TryGetValue(type, out cachedConstructor))
+                object[] arguments;
+                if (TryResolveParameters(cachedConstructor.GetParameters(), out arguments))
                 {
-                    object[] arguments;
-                    if (TryResolveParameters(cachedConstructor.GetParameters(), out arguments))
-                    {
-                        return cachedConstructor.Invoke(arguments.ToArray());
-                    }
+                    return cachedConstructor.Invoke(arguments.ToArray());
                 }
             }
 
@@ -53,6 +53,14 @@ namespace Thinject
             }
 
             throw new NoSuitableConstructorException(type);
+        }
+
+        private bool TryGetCachedConstructor(Type type, out ConstructorInfo cachedConstructor)
+        {
+            lock (_padlock)
+            {
+                return _constructorCache.TryGetValue(type, out cachedConstructor);
+            }
         }
 
         public object Resolve(Type serviceType)
@@ -79,6 +87,19 @@ namespace Thinject
                     if (parameterType.TryGetGenericCollectionArgument(out argumentType))
                     {
                         args.Add(_container.ResolveAll(argumentType).Cast(argumentType));
+                    }
+                    else if (parameterType.TryGetGenericFuncArgument(out argumentType))
+                    {
+                        var methodCallExpression = Expression.Call(
+                            Expression.Constant(_container),
+                            ResolveMethod,
+                            Expression.Constant(argumentType));
+
+                        var convertExpression = Expression.Convert(
+                            methodCallExpression,
+                            argumentType);
+
+                        args.Add(Expression.Lambda(convertExpression).Compile());
                     }
                     else
                     {

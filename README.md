@@ -13,7 +13,7 @@ A super simple, easy to use, portable, decent-performing IoC container - just fo
 	 - [x] Instance
 	 - [x] Lambda (Factory)
 	 - [ ] Named
- - [ ] Constructor Parameters
+ - [x] Constructor Parameters
 	 - [x] `IEnumerable<T>`
-	 - [ ] `Func<T>`
+	 - [x] `Func<T>`
  - [x] Automatic Disposal

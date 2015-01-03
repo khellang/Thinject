@@ -17,16 +17,12 @@ namespace Thinject
 
         public static bool TryGetGenericCollectionArgument(this Type type, out Type genericArgumentType)
         {
-            var typeInfo = type.GetTypeInfo();
+            return type.TryGetGenericArgument(typeof(IEnumerable<>), out genericArgumentType);
+        }
 
-            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            {
-                genericArgumentType = typeInfo.GenericTypeArguments.First();
-                return true;
-            };
-
-            genericArgumentType = null;
-            return false;
+        public static bool TryGetGenericFuncArgument(this Type type, out Type genericArgumentType)
+        {
+            return type.TryGetGenericArgument(typeof(Func<>), out genericArgumentType);
         }
 
         public static object Cast(this IEnumerable<object> values, Type targetType)
@@ -45,6 +41,20 @@ namespace Thinject
             var typeInfo = type.GetTypeInfo();
 
             return typeInfo.IsClass && !typeInfo.IsAbstract;
+        }
+
+        private static bool TryGetGenericArgument(this Type type, Type genericTypeDefinition, out Type genericArgumentType)
+        {
+            var typeInfo = type.GetTypeInfo();
+
+            if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == genericTypeDefinition)
+            {
+                genericArgumentType = typeInfo.GenericTypeArguments.First();
+                return true;
+            };
+
+            genericArgumentType = null;
+            return false;
         }
     }
 }
