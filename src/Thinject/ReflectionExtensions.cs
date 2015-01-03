@@ -31,6 +31,7 @@ namespace Thinject
 
         public static object Cast(this IEnumerable<object> values, Type targetType)
         {
+            // TODO: Cache generic methods?
             return CastMethod.MakeGenericMethod(targetType).Invoke(null, new object[] { values });
         }
     }
