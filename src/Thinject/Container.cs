@@ -70,9 +70,8 @@ namespace Thinject
 
                 foreach (var constructor in constructors)
                 {
-                    var arguments = ResolveArguments(constructor);
-
-                    if (arguments.Count == constructor.Value.Count)
+                    object[] arguments;
+                    if (TryResolveParameters(constructor.Value, out arguments))
                     {
                         return constructor.Key.Invoke(arguments.ToArray());
                     }
@@ -81,23 +80,25 @@ namespace Thinject
                 throw new NoSuitableConstructorException(type);
             }
 
-            private List<object> ResolveArguments(KeyValuePair<ConstructorInfo, IReadOnlyCollection<ParameterInfo>> constructor)
+            private bool TryResolveParameters(IEnumerable<ParameterInfo> parameters, out object[] arguments)
             {
-                var arguments = new List<object>();
+                var args = new List<object>();
 
-                foreach (var parameter in constructor.Value)
+                foreach (var parameter in parameters)
                 {
                     try
                     {
-                        arguments.Add(_container.Resolve(parameter.ParameterType));
+                        args.Add(_container.Resolve(parameter.ParameterType));
                     }
                     catch (Exception)
                     {
-                        break;
+                        arguments = new object[0];
+                        return false;
                     }
                 }
 
-                return arguments;
+                arguments = args.ToArray();
+                return true;
             }
 
             private static MultiValueDictionary<ConstructorInfo, ParameterInfo> GetConstructorDictionary(Type type)
